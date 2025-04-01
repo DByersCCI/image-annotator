@@ -150,7 +150,7 @@ export default function Annotator() {
                   pointerWidth={10}
                   fill="white"
                   stroke="white"
-                  strokeWidth={8}
+                  strokeWidth={6}
                 />
                 <Arrow
                   points={newArrow}
