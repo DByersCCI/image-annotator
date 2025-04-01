@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Image as KonvaImage, Arrow, Group } from "react-konva";
+import { Stage, Layer, Image as KonvaImage, Arrow, Group, Transformer } from "react-konva";
 import useImage from "use-image";
 
 export default function Annotator() {
@@ -14,6 +14,8 @@ export default function Annotator() {
   const [scale, setScale] = useState(1);
 
   const stageRef = useRef(null);
+  const transformerRef = useRef(null);
+  const arrowRefs = useRef([]);
 
   useEffect(() => {
     if (image) {
@@ -24,6 +26,13 @@ export default function Annotator() {
       setScale(Math.min(scaleX, scaleY));
     }
   }, [image]);
+
+  useEffect(() => {
+    if (selectedArrowIndex !== null && transformerRef.current && arrowRefs.current[selectedArrowIndex]) {
+      transformerRef.current.nodes([arrowRefs.current[selectedArrowIndex]]);
+      transformerRef.current.getLayer().batchDraw();
+    }
+  }, [selectedArrowIndex]);
 
   const getPointerPosition = (e) => {
     return e.target.getStage().getPointerPosition();
@@ -68,6 +77,26 @@ export default function Annotator() {
       node.y(),
       node.x() + node.getAttr("dx"),
       node.y() + node.getAttr("dy"),
+    ];
+    const updated = [...arrows];
+    updated[index] = newPoints;
+    setArrows(updated);
+  };
+
+  const handleTransformEnd = (e, index) => {
+    const node = e.target;
+    const scaleX = node.scaleX();
+    const scaleY = node.scaleY();
+    node.scaleX(1);
+    node.scaleY(1);
+
+    const dx = node.getAttr("dx") * scaleX;
+    const dy = node.getAttr("dy") * scaleY;
+    const newPoints = [
+      node.x(),
+      node.y(),
+      node.x() + dx,
+      node.y() + dy,
     ];
     const updated = [...arrows];
     updated[index] = newPoints;
@@ -148,11 +177,14 @@ export default function Annotator() {
                   onClick={() => handleArrowClick(i)}
                   draggable={i === selectedArrowIndex}
                   onDragMove={(e) => handleDragMove(e, i)}
+                  onTransformEnd={(e) => handleTransformEnd(e, i)}
                   dx={arrow[2] - arrow[0]}
                   dy={arrow[3] - arrow[1]}
+                  ref={(node) => (arrowRefs.current[i] = node)}
                 />
               </Group>
             ))}
+            <Transformer ref={transformerRef} rotateEnabled={true} enabledAnchors={["middle-right"]} />
             {newArrow.length === 4 && (
               <>
                 <Arrow
