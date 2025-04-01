@@ -146,8 +146,8 @@ export default function Annotator() {
               <>
                 <Arrow
                   points={newArrow}
-                  pointerLength={10}
-                  pointerWidth={10}
+                  pointerLength={6}
+                  pointerWidth={6}
                   fill="white"
                   stroke="white"
                   strokeWidth={6}
