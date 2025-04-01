@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Image as KonvaImage, Arrow } from "react-konva";
+import { Stage, Layer, Image as KonvaImage, Arrow, Group } from "react-konva";
 import useImage from "use-image";
 
 export default function Annotator() {
@@ -18,7 +18,7 @@ export default function Annotator() {
   useEffect(() => {
     if (image) {
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight - 150; // account for toolbar
+      const screenHeight = window.innerHeight - 150;
       const scaleX = screenWidth / image.width;
       const scaleY = screenHeight / image.height;
       setScale(Math.min(scaleX, scaleY));
@@ -118,30 +118,49 @@ export default function Annotator() {
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
             {arrows.map((arrow, i) => (
-              <Arrow
-                key={i}
-                points={arrow}
-                pointerLength={10}
-                pointerWidth={10}
-                fill={i === selectedArrowIndex ? "blue" : "red"}
-                stroke={i === selectedArrowIndex ? "blue" : "red"}
-                strokeWidth={4}
-                onClick={() => handleArrowClick(i)}
-                draggable={i === selectedArrowIndex}
-                onDragMove={(e) => handleDragMove(e, i)}
-                dx={arrow[2] - arrow[0]}
-                dy={arrow[3] - arrow[1]}
-              />
+              <Group key={i}>
+                <Arrow
+                  points={arrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="white"
+                  stroke="white"
+                  strokeWidth={8}
+                />
+                <Arrow
+                  points={arrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill={i === selectedArrowIndex ? "blue" : "red"}
+                  stroke={i === selectedArrowIndex ? "blue" : "red"}
+                  strokeWidth={4}
+                  onClick={() => handleArrowClick(i)}
+                  draggable={i === selectedArrowIndex}
+                  onDragMove={(e) => handleDragMove(e, i)}
+                  dx={arrow[2] - arrow[0]}
+                  dy={arrow[3] - arrow[1]}
+                />
+              </Group>
             ))}
             {newArrow.length === 4 && (
-              <Arrow
-                points={newArrow}
-                pointerLength={10}
-                pointerWidth={10}
-                fill="red"
-                stroke="red"
-                strokeWidth={4}
-              />
+              <>
+                <Arrow
+                  points={newArrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="white"
+                  stroke="white"
+                  strokeWidth={8}
+                />
+                <Arrow
+                  points={newArrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="red"
+                  stroke="red"
+                  strokeWidth={4}
+                />
+              </>
             )}
           </Layer>
         </Stage>
