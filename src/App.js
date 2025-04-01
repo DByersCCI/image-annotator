@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import { Stage, Layer, Image as KonvaImage, Arrow, Text } from "react-konva";
 import useImage from "use-image";
-import { Button } from "@/components/ui/button";
 
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -76,7 +75,10 @@ export default function Annotator() {
           )}
         </Layer>
       </Stage>
-      <Button onClick={handleExport} className="mt-4">Download Annotated Image</Button>
+      <button onClick={handleExport} style={{ marginTop: "1rem", padding: "0.5rem 1rem" }}>
+  Download Annotated Image
+</button>
+
     </div>
   );
 }
