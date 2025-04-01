@@ -25,23 +25,31 @@ export default function Annotator() {
     }
   }, [image]);
 
-  const handleMouseDown = (e) => {
+  const getPointerPosition = (e) => {
+    return e.target.getStage().getPointerPosition();
+  };
+
+  const startDrawing = (e) => {
     if (selectedArrowIndex !== null) {
       setSelectedArrowIndex(null);
       return;
     }
     setIsDrawing(true);
-    const pos = e.target.getStage().getPointerPosition();
-    setNewArrow([pos.x / scale, pos.y / scale]);
+    const pos = getPointerPosition(e);
+    if (pos) {
+      setNewArrow([pos.x / scale, pos.y / scale]);
+    }
   };
 
-  const handleMouseMove = (e) => {
+  const draw = (e) => {
     if (!isDrawing) return;
-    const pos = e.target.getStage().getPointerPosition();
-    setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+    const pos = getPointerPosition(e);
+    if (pos) {
+      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+    }
   };
 
-  const handleMouseUp = () => {
+  const endDrawing = () => {
     if (newArrow.length === 4) {
       setArrows([...arrows, newArrow]);
     }
@@ -110,9 +118,12 @@ export default function Annotator() {
           scaleX={scale}
           scaleY={scale}
           ref={stageRef}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
+          onMouseDown={startDrawing}
+          onTouchStart={startDrawing}
+          onMouseMove={draw}
+          onTouchMove={draw}
+          onMouseUp={endDrawing}
+          onTouchEnd={endDrawing}
           style={{ border: "1px solid #ccc" }}
         >
           <Layer>
@@ -146,11 +157,11 @@ export default function Annotator() {
               <>
                 <Arrow
                   points={newArrow}
-                  pointerLength={6}
-                  pointerWidth={6}
+                  pointerLength={10}
+                  pointerWidth={10}
                   fill="white"
                   stroke="white"
-                  strokeWidth={6}
+                  strokeWidth={8}
                 />
                 <Arrow
                   points={newArrow}
