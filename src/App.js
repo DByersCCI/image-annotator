@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from "react";
-import { Stage, Layer, Image as KonvaImage, Arrow, Transformer } from "react-konva";
+import { Stage, Layer, Image as KonvaImage, Arrow } from "react-konva";
 import useImage from "use-image";
 
 export default function Annotator() {
@@ -14,8 +14,6 @@ export default function Annotator() {
   const [scale, setScale] = useState(1);
 
   const stageRef = useRef(null);
-  const transformerRef = useRef(null);
-  const arrowRefs = useRef([]);
 
   useEffect(() => {
     if (image) {
@@ -26,13 +24,6 @@ export default function Annotator() {
       setScale(Math.min(scaleX, scaleY));
     }
   }, [image]);
-
-  useEffect(() => {
-    if (selectedArrowIndex !== null && transformerRef.current && arrowRefs.current[selectedArrowIndex]) {
-      transformerRef.current.nodes([arrowRefs.current[selectedArrowIndex]]);
-      transformerRef.current.getLayer().batchDraw();
-    }
-  }, [selectedArrowIndex, arrows]);
 
   const getPointerPosition = (e) => e.target.getStage().getPointerPosition();
 
@@ -66,24 +57,6 @@ export default function Annotator() {
 
   const handleArrowClick = (index) => {
     setSelectedArrowIndex(index);
-  };
-
-  const handleTransformEnd = (e, index) => {
-    const node = arrowRefs.current[index];
-    const scaleX = node.scaleX();
-    const scaleY = node.scaleY();
-    node.scaleX(1);
-    node.scaleY(1);
-
-    const [x1, y1] = [node.x(), node.y()];
-    const dx = (node.points()[2] - node.points()[0]) * scaleX;
-    const dy = (node.points()[3] - node.points()[1]) * scaleY;
-    const x2 = x1 + dx;
-    const y2 = y1 + dy;
-
-    const updated = [...arrows];
-    updated[index] = [x1, y1, x2, y2];
-    setArrows(updated);
   };
 
   const handleExport = () => {
@@ -141,37 +114,48 @@ export default function Annotator() {
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
             {arrows.map((arrow, i) => (
-              <Arrow
-                key={i}
-                ref={(node) => (arrowRefs.current[i] = node)}
-                points={arrow}
-                pointerLength={10}
-                pointerWidth={10}
-                fill={i === selectedArrowIndex ? "blue" : "red"}
-                stroke={"white"}
-                strokeWidth={8}
-                onClick={() => handleArrowClick(i)}
-                onTap={() => handleArrowClick(i)}
-                draggable={i === selectedArrowIndex}
-                onDragEnd={(e) => handleTransformEnd(e, i)}
-                onTransformEnd={(e) => handleTransformEnd(e, i)}
-              />
+              <>
+                <Arrow
+                  key={`outline-${i}`}
+                  points={arrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="white"
+                  stroke="white"
+                  strokeWidth={8}
+                />
+                <Arrow
+                  key={`main-${i}`}
+                  points={arrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill={i === selectedArrowIndex ? "blue" : "red"}
+                  stroke={i === selectedArrowIndex ? "blue" : "red"}
+                  strokeWidth={4}
+                  onClick={() => handleArrowClick(i)}
+                  onTap={() => handleArrowClick(i)}
+                />
+              </>
             ))}
-            <Transformer
-              ref={transformerRef}
-              rotateEnabled={false}
-              enabledAnchors={["middle-right", "bottom-right"]}
-              boundBoxFunc={(oldBox, newBox) => newBox}
-            />
             {newArrow.length === 4 && (
-              <Arrow
-                points={newArrow}
-                pointerLength={10}
-                pointerWidth={10}
-                fill="red"
-                stroke="white"
-                strokeWidth={8}
-              />
+              <>
+                <Arrow
+                  points={newArrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="white"
+                  stroke="white"
+                  strokeWidth={8}
+                />
+                <Arrow
+                  points={newArrow}
+                  pointerLength={10}
+                  pointerWidth={10}
+                  fill="red"
+                  stroke="red"
+                  strokeWidth={4}
+                />
+              </>
             )}
           </Layer>
         </Stage>
