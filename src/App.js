@@ -32,11 +32,9 @@ export default function Annotator() {
       transformerRef.current.nodes([arrowRefs.current[selectedArrowIndex]]);
       transformerRef.current.getLayer().batchDraw();
     }
-  }, [selectedArrowIndex]);
+  }, [selectedArrowIndex, arrows]);
 
-  const getPointerPosition = (e) => {
-    return e.target.getStage().getPointerPosition();
-  };
+  const getPointerPosition = (e) => e.target.getStage().getPointerPosition();
 
   const startDrawing = (e) => {
     if (selectedArrowIndex !== null) {
@@ -60,46 +58,21 @@ export default function Annotator() {
 
   const endDrawing = () => {
     if (newArrow.length === 4) {
-      setArrows([...arrows, newArrow]);
+      setArrows((prev) => [...prev, newArrow]);
     }
     setIsDrawing(false);
     setNewArrow([]);
   };
 
-  const handleArrowClick = (index) => {
+  const handleGroupClick = (index) => {
     setSelectedArrowIndex(index);
   };
 
-  const handleDragMove = (e, index) => {
-    const node = e.target;
-    const newPoints = [
-      node.x(),
-      node.y(),
-      node.x() + node.getAttr("dx"),
-      node.y() + node.getAttr("dy"),
-    ];
-    const updated = [...arrows];
-    updated[index] = newPoints;
-    setArrows(updated);
-  };
-
   const handleTransformEnd = (e, index) => {
-    const node = e.target;
-    const scaleX = node.scaleX();
-    const scaleY = node.scaleY();
-    node.scaleX(1);
-    node.scaleY(1);
-
-    const dx = node.getAttr("dx") * scaleX;
-    const dy = node.getAttr("dy") * scaleY;
-    const newPoints = [
-      node.x(),
-      node.y(),
-      node.x() + dx,
-      node.y() + dy,
-    ];
+    const node = arrowRefs.current[index];
+    const points = node.points();
     const updated = [...arrows];
-    updated[index] = newPoints;
+    updated[index] = points;
     setArrows(updated);
   };
 
@@ -112,13 +85,13 @@ export default function Annotator() {
   };
 
   const handleUndo = () => {
-    setArrows(arrows.slice(0, -1));
+    setArrows((prev) => prev.slice(0, -1));
+    setSelectedArrowIndex(null);
   };
 
   const handleDelete = () => {
     if (selectedArrowIndex !== null) {
-      const updated = arrows.filter((_, i) => i !== selectedArrowIndex);
-      setArrows(updated);
+      setArrows((prev) => prev.filter((_, i) => i !== selectedArrowIndex));
       setSelectedArrowIndex(null);
     }
   };
@@ -158,8 +131,15 @@ export default function Annotator() {
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
             {arrows.map((arrow, i) => (
-              <Group key={i}>
+              <Group
+                key={i}
+                onClick={() => handleGroupClick(i)}
+                onTap={() => handleGroupClick(i)}
+                draggable={i === selectedArrowIndex}
+                onDragEnd={(e) => handleTransformEnd(e, i)}
+              >
                 <Arrow
+                  ref={(node) => (arrowRefs.current[i] = node)}
                   points={arrow}
                   pointerLength={10}
                   pointerWidth={10}
@@ -174,17 +154,15 @@ export default function Annotator() {
                   fill={i === selectedArrowIndex ? "blue" : "red"}
                   stroke={i === selectedArrowIndex ? "blue" : "red"}
                   strokeWidth={4}
-                  onClick={() => handleArrowClick(i)}
-                  draggable={i === selectedArrowIndex}
-                  onDragMove={(e) => handleDragMove(e, i)}
-                  onTransformEnd={(e) => handleTransformEnd(e, i)}
-                  dx={arrow[2] - arrow[0]}
-                  dy={arrow[3] - arrow[1]}
-                  ref={(node) => (arrowRefs.current[i] = node)}
                 />
               </Group>
             ))}
-            <Transformer ref={transformerRef} rotateEnabled={true} enabledAnchors={["middle-right"]} />
+            <Transformer
+              ref={transformerRef}
+              rotateEnabled={false}
+              enabledAnchors={["middle-right"]}
+              boundBoxFunc={(oldBox, newBox) => newBox} // allow free transform
+            />
             {newArrow.length === 4 && (
               <>
                 <Arrow
