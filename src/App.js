@@ -1,5 +1,7 @@
-import { useRef, useEffect, useState } from "react";
-import { Stage, Layer, Image as KonvaImage, Arrow, Text } from "react-konva";
+import { useRef, useState } from "react";
+import { Stage, Layer, Image as KonvaImage, Arrow } from "react-konva";
+
+
 import useImage from "use-image";
 
 export default function Annotator() {
