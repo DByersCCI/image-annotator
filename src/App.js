@@ -118,17 +118,17 @@ export default function Annotator() {
                 <Arrow
                   key={`outline-${i}`}
                   points={arrow}
-                  pointerLength={10}
-                  pointerWidth={10}
+                  pointerLength={6}
+                  pointerWidth={6}
                   fill="white"
                   stroke="white"
-                  strokeWidth={8}
+                  strokeWidth={6}
                 />
                 <Arrow
                   key={`main-${i}`}
                   points={arrow}
-                  pointerLength={10}
-                  pointerWidth={10}
+                  pointerLength={6}
+                  pointerWidth={6}
                   fill={i === selectedArrowIndex ? "blue" : "red"}
                   stroke={i === selectedArrowIndex ? "blue" : "red"}
                   strokeWidth={4}
