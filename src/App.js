@@ -4,7 +4,15 @@ import useImage from "use-image";
 
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
-  const imageUrl = urlParams.get("image") || "";
+  let imageUrl = urlParams.get("image") || "";
+
+  // Convert Google Drive share link to direct image link
+  if (imageUrl.includes("drive.google.com/file/d/")) {
+    const fileId = imageUrl.split("/d/")[1]?.split("/")[0];
+    if (fileId) {
+      imageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
+    }
+  }
 
   const [image, status] = useImage(imageUrl, "anonymous");
   const [arrows, setArrows] = useState([]);
