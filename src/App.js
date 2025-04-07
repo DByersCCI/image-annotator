@@ -6,30 +6,37 @@ export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
   let imageUrl = urlParams.get("image") || "";
 
-  // Convert Google Drive share link to direct image link
-  if (imageUrl.includes("drive.google.com/file/d/")) {
-    const fileId = imageUrl.split("/d/")[1]?.split("/")[0];
-    if (fileId) {
-      imageUrl = `https://drive.google.com/uc?export=view&id=${fileId}`;
-    }
-  }
-
-    const [image, status] = useImage(
-    imageUrl?.startsWith("data:image")
-      ? imageUrl
-      : decodeURIComponent(imageUrl),
-    "anonymous"
-  );
-  
-
-
+  const [finalImageUrl, setFinalImageUrl] = useState(null);
+  const [image, status] = useImage(finalImageUrl);
   const [arrows, setArrows] = useState([]);
   const [newArrow, setNewArrow] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [selectedArrowIndex, setSelectedArrowIndex] = useState(null);
   const [scale, setScale] = useState(1);
-
   const stageRef = useRef(null);
+
+  useEffect(() => {
+    async function resolveImageUrl() {
+      if (!imageUrl) return;
+
+      if (imageUrl.startsWith("data:image")) {
+        setFinalImageUrl(imageUrl);
+      } else {
+        try {
+          const response = await fetch(imageUrl);
+          const base64 = await response.text();
+          if (base64.startsWith("data:image")) {
+            setFinalImageUrl(base64);
+          } else {
+            console.error("Returned value is not a valid Base64 image");
+          }
+        } catch (err) {
+          console.error("Failed to fetch image from URL", err);
+        }
+      }
+    }
+    resolveImageUrl();
+  }, [imageUrl]);
 
   useEffect(() => {
     if (image) {
