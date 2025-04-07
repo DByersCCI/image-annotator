@@ -14,8 +14,7 @@ export default function Annotator() {
     }
   }
 
-  // const [image, status] = useImage(imageUrl, "anonymous");
-  const [image, status] = useImage(
+    const [image, status] = useImage(
     imageUrl?.startsWith("data:image")
       ? imageUrl
       : decodeURIComponent(imageUrl),
