@@ -67,15 +67,17 @@ export default function Annotator() {
     const pos = getPointerPosition(e);
     if (pos) {
 
-//adjust arrow drawing here
-      setNewArrow((prev) => [pos.x / scale, pos.y / scale, prev[0], prev[1]]);
-      //      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
     }
   };
 
   const endDrawing = () => {
     if (newArrow.length === 4) {
-      setArrows((prev) => [...prev, newArrow]);
+//adjust arrow drawing here
+const [x1, y1, x2, y2] = newArrow;
+setArrows((prev) => [...prev, [x2, y2, x1, y1]]);
+ 
+//      setArrows((prev) => [...prev, newArrow]);
     }
     setIsDrawing(false);
     setNewArrow([]);
