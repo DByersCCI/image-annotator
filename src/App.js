@@ -91,39 +91,19 @@ export default function Annotator() {
     link.click();
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!imageUrl || !stageRef.current) return;
 
     const dataUrl = stageRef.current.toDataURL({ mimeType: "image/jpeg" });
     const base64 = dataUrl.split(",")[1];
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
-    try {
-      const response = await fetch(
-        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originalFileName,
-            base64Image: base64,
-          }),
-        }
-      );
+    const testGetUrl =
+      "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec" +
+      "?filename=" + encodeURIComponent(originalFileName) +
+      "&image=" + encodeURIComponent(base64);
 
-      const result = await response.json();
-      if (result.status === "success") {
-        alert("Saved to app as: " + result.fileName);
-        // Optionally trigger AppSheet sync or redirect
-      } else {
-        alert("Save failed: " + result.message);
-      }
-    } catch (err) {
-      console.error("Upload failed", err);
-      alert("Upload error: " + err.message);
-    }
+    window.open(testGetUrl, "_blank");
   };
 
   const handleUndo = () => {
