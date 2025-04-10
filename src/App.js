@@ -66,18 +66,14 @@ export default function Annotator() {
     if (!isDrawing) return;
     const pos = getPointerPosition(e);
     if (pos) {
-
       setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
     }
   };
 
   const endDrawing = () => {
     if (newArrow.length === 4) {
-//adjust arrow drawing here
-const [x1, y1, x2, y2] = newArrow;
-setArrows((prev) => [...prev, [x2, y2, x1, y1]]);
- 
-//      setArrows((prev) => [...prev, newArrow]);
+      const [x1, y1, x2, y2] = newArrow;
+      setArrows((prev) => [...prev, [x2, y2, x1, y1]]);
     }
     setIsDrawing(false);
     setNewArrow([]);
@@ -93,6 +89,36 @@ setArrows((prev) => [...prev, [x2, y2, x1, y1]]);
     link.download = "annotated-image.png";
     link.href = uri;
     link.click();
+  };
+
+  const handleSave = async () => {
+    if (!imageUrl || !stageRef.current) return;
+
+    const dataUrl = stageRef.current.toDataURL({ mimeType: "image/jpeg" });
+    const base64 = dataUrl.split(",")[1];
+    const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
+
+    try {
+      const response = await fetch("https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          originalFileName,
+          base64Image: base64
+        })
+      });
+
+      const result = await response.json();
+      if (result.status === "success") {
+        alert("Saved to app as: " + result.fileName);
+        // Optionally trigger AppSheet sync or redirect
+      } else {
+        alert("Save failed: " + result.message);
+      }
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("Upload error: " + err.message);
+    }
   };
 
   const handleUndo = () => {
@@ -119,6 +145,7 @@ setArrows((prev) => [...prev, [x2, y2, x1, y1]]);
     <div style={{ padding: 20 }}>
       <div style={{ marginBottom: 10 }}>
         <button onClick={handleExport}>Download</button>
+        <button onClick={handleSave}>Save to App</button>
         <button onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
         <button onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
         <button onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
