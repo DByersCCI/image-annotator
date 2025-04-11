@@ -99,7 +99,7 @@ export default function Annotator() {
 
     const dataUrl = stageRef.current.toDataURL({
       mimeType: "image/jpeg",
-      quality: 0.6,
+      quality: 0.92,
     });
 
     const base64 = dataUrl.split(",")[1];
