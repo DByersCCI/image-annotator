@@ -91,20 +91,17 @@ export default function Annotator() {
     link.click();
   };
 
-
-
-  
   const handleSave = async () => {
     if (!imageUrl || !stageRef.current) return;
-  
+
     const dataUrl = stageRef.current.toDataURL({
       mimeType: "image/jpeg",
       quality: 0.6,
     });
-  
+
     const base64 = dataUrl.split(",")[1];
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
-  
+
     try {
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
@@ -117,29 +114,17 @@ export default function Annotator() {
             originalFileName,
             base64Image: base64,
           }),
-          mode: "no-cors", // Still in use for now, hides body
+          mode: "no-cors",
         }
       );
-  
-      // Remove this if you're using no-cors, but keep if switching to CORS-safe mode later
-      // const result = await response.json();
-      // if (result.status === "success") {
-      //   alert("✅ Saved to Drive: " + result.fileName);
-      // } else {
-      //   alert("❌ Save failed: " + result.message);
-      // }
-  
+
       alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
     }
   };
-  
 
-
-
-  
   const handleUndo = () => {
     setArrows((prev) => prev.slice(0, -1));
     setSelectedArrowIndex(null);
