@@ -139,20 +139,7 @@ export default function Annotator() {
 
 
 
-
-
-      const result = await response.json();
-      if (result.status === "success") {
-        alert("✅ Saved to Drive: " + result.fileName);
-      } else {
-        alert("❌ Save failed: " + result.message);
-      }
-    } catch (err) {
-      console.error("Upload failed", err);
-      alert("🚨 Upload error: " + err.message);
-    }
-  };
-
+  
   const handleUndo = () => {
     setArrows((prev) => prev.slice(0, -1));
     setSelectedArrowIndex(null);
