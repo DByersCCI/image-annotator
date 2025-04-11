@@ -106,7 +106,7 @@ export default function Annotator() {
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      const response = await fetch(
+      await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
@@ -123,7 +123,13 @@ export default function Annotator() {
         }
       );
 
-      alert("✅ Upload complete. Redirecting...");
+      if (jobId) {
+        const appId = "2f41c871-4544-4a92-b190-208d22f8748c"; // Replace with your real App ID
+        const redirectUrl = `https://www.appsheet.com/start/${appId}#view=Sample%20Annotator%20Detail&filter=%5BJob_ID%5D%3D%22${encodeURIComponent(jobId)}%22`;
+        window.location.href = redirectUrl;
+      } else {
+        alert("✅ Upload complete.");
+      }
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
