@@ -91,6 +91,9 @@ export default function Annotator() {
     link.click();
   };
 
+
+
+  
   const handleSave = async () => {
     if (!imageUrl || !stageRef.current) return;
   
@@ -114,16 +117,29 @@ export default function Annotator() {
             originalFileName,
             base64Image: base64,
           }),
-          mode: "no-cors", // This prevents CORS errors but hides response body
+          mode: "no-cors", // Still in use for now, hides body
         }
       );
   
-      alert("✅ Upload attempted. Please check Drive for saved file.");
+      // Remove this if you're using no-cors, but keep if switching to CORS-safe mode later
+      // const result = await response.json();
+      // if (result.status === "success") {
+      //   alert("✅ Saved to Drive: " + result.fileName);
+      // } else {
+      //   alert("❌ Save failed: " + result.message);
+      // }
+  
+      alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
     }
   };
+  
+
+
+
+
 
       const result = await response.json();
       if (result.status === "success") {
