@@ -93,15 +93,15 @@ export default function Annotator() {
 
   const handleSave = async () => {
     if (!imageUrl || !stageRef.current) return;
-
+  
     const dataUrl = stageRef.current.toDataURL({
       mimeType: "image/jpeg",
       quality: 0.6,
     });
-
+  
     const base64 = dataUrl.split(",")[1];
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
-
+  
     try {
       const response = await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
@@ -114,8 +114,16 @@ export default function Annotator() {
             originalFileName,
             base64Image: base64,
           }),
+          mode: "no-cors", // This prevents CORS errors but hides response body
         }
       );
+  
+      alert("✅ Upload attempted. Please check Drive for saved file.");
+    } catch (err) {
+      console.error("Upload failed", err);
+      alert("🚨 Upload error: " + err.message);
+    }
+  };
 
       const result = await response.json();
       if (result.status === "success") {
