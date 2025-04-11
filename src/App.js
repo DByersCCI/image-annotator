@@ -103,9 +103,8 @@ export default function Annotator() {
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      //const response = await fetch(
-        await fetch(...)  // ✅
-
+      
+        await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
