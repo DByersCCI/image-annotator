@@ -5,6 +5,9 @@ import useImage from "use-image";
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
   let imageUrl = urlParams.get("image") || "";
+  const rowId = urlParams.get("row") || "";
+  const tableName = urlParams.get("table") || "";
+  const jobId = urlParams.get("job") || "";
 
   const [finalImageUrl, setFinalImageUrl] = useState(null);
   const [image, status] = useImage(finalImageUrl);
@@ -103,8 +106,7 @@ export default function Annotator() {
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      
-        await fetch(
+      const response = await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
@@ -114,12 +116,14 @@ export default function Annotator() {
           body: JSON.stringify({
             originalFileName,
             base64Image: base64,
+            row: rowId,
+            table: tableName,
+            job: jobId,
           }),
-          mode: "no-cors",
         }
       );
 
-      alert("✅ Upload attempted. Check Google Drive to confirm.");
+      alert("✅ Upload complete. Redirecting...");
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
