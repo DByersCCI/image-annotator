@@ -13,6 +13,7 @@ export default function Annotator() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [selectedArrowIndex, setSelectedArrowIndex] = useState(null);
   const [scale, setScale] = useState(1);
+  const [isSaving, setIsSaving] = useState(false);
   const stageRef = useRef(null);
 
   useEffect(() => {
@@ -98,7 +99,9 @@ export default function Annotator() {
   };
 
   const handleSave = async () => {
-    if (!imageUrl || !stageRef.current) return;
+    if (!imageUrl || !stageRef.current || isSaving) return;
+
+    setIsSaving(true);
 
     const dataUrl = stageRef.current.toDataURL({
       mimeType: "image/jpeg",
@@ -155,7 +158,9 @@ export default function Annotator() {
     <div style={{ padding: 20, touchAction: "manipulation" }}>
       <div style={{ marginBottom: 10 }}>
         <button onClick={handleExport}>Download</button>
-        <button onClick={handleSave}>Save to App</button>
+        <button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? "Saved" : "Save to App"}
+        </button>
         <button onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
         <button onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
         <button onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
