@@ -121,14 +121,14 @@ export default function Annotator() {
   if (status === "failed") return <p>Image failed to load. Check the URL.</p>;
 
   return (
-    <div style={{ marginBottom: 10, display: "flex", flexWrap: "wrap", gap: "8px" }}>
-        <button style={buttonStyle} onClick={handleExport}>Download</button>
-        <button style={buttonStyle} onClick={handleSave} disabled={isSaving}>
-         {isSaving ? "Saved" : "Save to App"}
+    <div style={{ padding: 20, touchAction: "manipulation" }}>
+      <div style={{ marginBottom: 10 }}>
+        <button onClick={handleSave} disabled={isSaving}>
+          {isSaving ? "Saved" : "Save to App"}
         </button>
-        <button style={buttonStyle} onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
-        <button style={buttonStyle} onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
-        <button style={buttonStyle} onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
+        <button onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
+        <button onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
+        <button onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
       </div>
 
       {image ? (
