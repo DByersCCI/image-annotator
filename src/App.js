@@ -42,9 +42,12 @@ export default function Annotator() {
     if (image) {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight - 150;
-      const scaleX = screenWidth / image.width;
-      const scaleY = screenHeight / image.height;
-      setScale(Math.min(scaleX, scaleY));
+
+      const margin = 20;
+      const scaleX = (screenWidth - margin * 2) / image.width;
+      const scaleY = (screenHeight - margin * 2) / image.height;
+      setScale(Math.min(scaleX, scaleY, 1));  // Never zoom in above 100%
+
     }
   }, [image]);
 
@@ -147,7 +150,8 @@ export default function Annotator() {
   if (status === "failed") return <p>Image failed to load. Check the URL.</p>;
 
   return (
-    <div style={{ padding: 20 }}>
+    <div style={{ padding: 20, touchAction: "manipulation" }}>
+  
       <div style={{ marginBottom: 10 }}>
         <button onClick={handleExport}>Download</button>
         <button onClick={handleSave}>Save to App</button>
