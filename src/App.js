@@ -20,22 +20,29 @@ export default function Annotator() {
     async function resolveImageUrl() {
       if (!imageUrl) return;
 
-      if (imageUrl.startsWith("data:image")) {
+      // ✅ Use image directly if it's already a full URL or base64
+      if (
+        imageUrl.startsWith("data:image") ||
+        imageUrl.startsWith("https://")
+      ) {
         setFinalImageUrl(imageUrl);
-      } else {
-        try {
-          const response = await fetch(imageUrl);
-          const base64 = await response.text();
-          if (base64.startsWith("data:image")) {
-            setFinalImageUrl(base64);
-          } else {
-            console.error("Returned value is not a valid Base64 image");
-          }
-        } catch (err) {
-          console.error("Failed to fetch image from URL", err);
+        return;
+      }
+
+      // Otherwise, treat it as an Apps Script endpoint that returns base64
+      try {
+        const response = await fetch(imageUrl);
+        const base64 = await response.text();
+        if (base64.startsWith("data:image")) {
+          setFinalImageUrl(base64);
+        } else {
+          console.error("Returned value is not a valid Base64 image");
         }
+      } catch (err) {
+        console.error("Failed to fetch image from URL", err);
       }
     }
+
     resolveImageUrl();
   }, [imageUrl]);
 
