@@ -4,6 +4,7 @@ import useImage from "use-image";
 
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
+
   const imageUrl = urlParams.get("image") || "";
   const originalFileName = urlParams.get("originalFileName") || "";
   const rowId = urlParams.get("row") || "";
@@ -41,13 +42,17 @@ export default function Annotator() {
     }
     setIsDrawing(true);
     const pos = getPointerPosition(e);
-    if (pos) setNewArrow([pos.x / scale, pos.y / scale]);
+    if (pos) {
+      setNewArrow([pos.x / scale, pos.y / scale]);
+    }
   };
 
   const draw = (e) => {
     if (!isDrawing) return;
     const pos = getPointerPosition(e);
-    if (pos) setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+    if (pos) {
+      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+    }
   };
 
   const endDrawing = () => {
@@ -62,7 +67,7 @@ export default function Annotator() {
   const handleArrowClick = (index) => setSelectedArrowIndex(index);
 
   const handleSave = async () => {
-    if (!imageUrl || !stageRef.current || isSaving) return;
+    if (!originalFileName || !stageRef.current || isSaving) return;
     setIsSaving(true);
 
     const dataUrl = stageRef.current.toDataURL({
@@ -73,20 +78,20 @@ export default function Annotator() {
     const base64 = dataUrl.split(",")[1];
 
     try {
-      await fetch("https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          originalFileName,
-          base64Image: base64,
-          row: rowId,
-          table: tableName,
-          job: jobId,
-        }),
-        mode: "no-cors",
-      });
+      await fetch(
+        `https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            originalFileName,
+            base64Image: base64,
+          }),
+          mode: "no-cors",
+        }
+      );
 
       alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
