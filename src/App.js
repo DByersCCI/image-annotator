@@ -5,9 +5,6 @@ import useImage from "use-image";
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
   let imageUrl = urlParams.get("image") || "";
-  const rowId = urlParams.get("row") || "";
-  const tableName = urlParams.get("table") || "";
-  const jobId = urlParams.get("job") || "";
 
   const [finalImageUrl, setFinalImageUrl] = useState(null);
   const [image, status] = useImage(finalImageUrl);
@@ -99,14 +96,15 @@ export default function Annotator() {
 
     const dataUrl = stageRef.current.toDataURL({
       mimeType: "image/jpeg",
-      quality: 0.92,
+      quality: 0.6,
     });
 
     const base64 = dataUrl.split(",")[1];
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      await fetch(
+      
+        await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
@@ -116,20 +114,12 @@ export default function Annotator() {
           body: JSON.stringify({
             originalFileName,
             base64Image: base64,
-            row: rowId,
-            table: tableName,
-            job: jobId,
           }),
+          mode: "no-cors",
         }
       );
 
-      if (jobId) {
-        const appId = "2f41c871-4544-4a92-b190-208d22f8748c"; // Replace with your real App ID
-        const redirectUrl = `https://www.appsheet.com/start/${appId}#view=Sample%20Annotator%20Detail&filter=%5BJob_ID%5D%3D%22${encodeURIComponent(jobId)}%22`;
-        window.location.href = redirectUrl;
-      } else {
-        alert("✅ Upload complete.");
-      }
+      alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
