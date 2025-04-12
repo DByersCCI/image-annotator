@@ -5,11 +5,11 @@ import useImage from "use-image";
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
   const imageUrl = urlParams.get("image") || "";
-  //const originalPath = urlParams.get("originalFileName") || "";
+  
   const rowId = urlParams.get("row") || "";
   const tableName = urlParams.get("table") || "";
   const jobId = urlParams.get("job") || "";
-  //const originalFileName = originalPath.split("/").pop();
+  
   const originalFileName = urlParams.get("originalFileName") || "";
 
 
