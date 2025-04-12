@@ -6,7 +6,10 @@ export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
   const imageUrl = urlParams.get("image") || "";
   const originalPath = urlParams.get("originalFileName") || "";
-  const originalFileName = originalPath.split("/").pop(); // remove folder path
+  const rowId = urlParams.get("row") || "";
+  const tableName = urlParams.get("table") || "";
+  const jobId = urlParams.get("job") || "";
+  const originalFileName = originalPath.split("/").pop();
 
   const [finalImageUrl, setFinalImageUrl] = useState(null);
   const [image, status] = useImage(finalImageUrl);
@@ -110,7 +113,8 @@ export default function Annotator() {
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
+        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec" +
+          `?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
         {
           method: "POST",
           headers: {
