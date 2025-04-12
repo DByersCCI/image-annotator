@@ -44,9 +44,17 @@ export default function Annotator() {
       const screenHeight = window.innerHeight - 150;
 
       const margin = 20;
-      const scaleX = (screenWidth - margin * 2) / image.width;
-      const scaleY = (screenHeight - margin * 2) / image.height;
-      setScale(Math.min(scaleX, scaleY, 1));  // Never zoom in above 100%
+
+      const margin = 20;
+      const maxWidth = screenWidth - margin * 2;
+      const maxHeight = screenHeight - margin * 2;
+      const scaleX = maxWidth / image.width;
+      const scaleY = maxHeight / image.height;
+      
+      // Prevent upscaling past 1.0 (100%) to avoid blurry images
+      const fitScale = Math.min(scaleX, scaleY, 1);
+      
+      setScale(fitScale);
 
     }
   }, [image]);
