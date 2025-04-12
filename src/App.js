@@ -4,10 +4,13 @@ import useImage from "use-image";
 
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
-  let imageUrl = urlParams.get("image") || "";
+  const imageUrl = urlParams.get("image") || "";
+  const originalFileName = urlParams.get("originalFileName") || "";
+  const rowId = urlParams.get("row") || "";
+  const tableName = urlParams.get("table") || "";
+  const jobId = urlParams.get("job") || "";
 
-  const [finalImageUrl, setFinalImageUrl] = useState(null);
-  const [image, status] = useImage(finalImageUrl);
+  const [image, status] = useImage(imageUrl, "anonymous");
   const [arrows, setArrows] = useState([]);
   const [newArrow, setNewArrow] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -17,41 +20,15 @@ export default function Annotator() {
   const stageRef = useRef(null);
 
   useEffect(() => {
-    async function resolveImageUrl() {
-      if (!imageUrl) return;
-
-      if (imageUrl.startsWith("data:image")) {
-        setFinalImageUrl(imageUrl);
-      } else {
-        try {
-          const response = await fetch(imageUrl);
-          const base64 = await response.text();
-          if (base64.startsWith("data:image")) {
-            setFinalImageUrl(base64);
-          } else {
-            console.error("Returned value is not a valid Base64 image");
-          }
-        } catch (err) {
-          console.error("Failed to fetch image from URL", err);
-        }
-      }
-    }
-    resolveImageUrl();
-  }, [imageUrl]);
-
-  useEffect(() => {
     if (image) {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight - 150;
-
       const margin = 20;
       const maxWidth = screenWidth - margin * 2;
       const maxHeight = screenHeight - margin * 2;
       const scaleX = maxWidth / image.width;
       const scaleY = maxHeight / image.height;
-
-      const fitScale = Math.min(scaleX, scaleY, 1);
-      setScale(fitScale);
+      setScale(Math.min(scaleX, scaleY, 1));
     }
   }, [image]);
 
@@ -64,17 +41,13 @@ export default function Annotator() {
     }
     setIsDrawing(true);
     const pos = getPointerPosition(e);
-    if (pos) {
-      setNewArrow([pos.x / scale, pos.y / scale]);
-    }
+    if (pos) setNewArrow([pos.x / scale, pos.y / scale]);
   };
 
   const draw = (e) => {
     if (!isDrawing) return;
     const pos = getPointerPosition(e);
-    if (pos) {
-      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
-    }
+    if (pos) setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
   };
 
   const endDrawing = () => {
@@ -86,21 +59,10 @@ export default function Annotator() {
     setNewArrow([]);
   };
 
-  const handleArrowClick = (index) => {
-    setSelectedArrowIndex(index);
-  };
-
-  const handleExport = () => {
-    const uri = stageRef.current.toDataURL();
-    const link = document.createElement("a");
-    link.download = "annotated-image.png";
-    link.href = uri;
-    link.click();
-  };
+  const handleArrowClick = (index) => setSelectedArrowIndex(index);
 
   const handleSave = async () => {
     if (!imageUrl || !stageRef.current || isSaving) return;
-
     setIsSaving(true);
 
     const dataUrl = stageRef.current.toDataURL({
@@ -109,23 +71,22 @@ export default function Annotator() {
     });
 
     const base64 = dataUrl.split(",")[1];
-    const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      await fetch(
-        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originalFileName,
-            base64Image: base64,
-          }),
-          mode: "no-cors",
-        }
-      );
+      await fetch("https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          originalFileName,
+          base64Image: base64,
+          row: rowId,
+          table: tableName,
+          job: jobId,
+        }),
+        mode: "no-cors",
+      });
 
       alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
@@ -157,7 +118,6 @@ export default function Annotator() {
   return (
     <div style={{ padding: 20, touchAction: "manipulation" }}>
       <div style={{ marginBottom: 10 }}>
-        <button onClick={handleExport}>Download</button>
         <button onClick={handleSave} disabled={isSaving}>
           {isSaving ? "Saved" : "Save to App"}
         </button>
@@ -228,7 +188,7 @@ export default function Annotator() {
           </Layer>
         </Stage>
       ) : (
-        <p>No image loaded. Add ?image=YOUR_IMAGE_URL to the URL.</p>
+        <p>No image loaded.</p>
       )}
     </div>
   );
