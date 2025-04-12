@@ -187,19 +187,19 @@ export default function Annotator() {
               <React.Fragment key={i}>
                 <Arrow
                   points={arrow}
-                  pointerLength={10}
-                  pointerWidth={10}
+                  pointerLength={15}
+                  pointerWidth={15}
                   fill="white"
                   stroke="white"
-                  strokeWidth={10}
+                  strokeWidth={15}
                 />
                 <Arrow
                   points={arrow}
-                  pointerLength={8}
-                  pointerWidth={8}
+                  pointerLength={13}
+                  pointerWidth={13}
                   fill={i === selectedArrowIndex ? "blue" : "red"}
                   stroke={i === selectedArrowIndex ? "blue" : "red"}
-                  strokeWidth={6}
+                  strokeWidth={11}
                   onClick={() => handleArrowClick(i)}
                   onTap={() => handleArrowClick(i)}
                 />
@@ -209,19 +209,19 @@ export default function Annotator() {
               <>
                 <Arrow
                   points={newArrow}
-                  pointerLength={10}
-                  pointerWidth={10}
+                  pointerLength={15}
+                  pointerWidth={15}
                   fill="white"
                   stroke="white"
-                  strokeWidth={10}
+                  strokeWidth={15}
                 />
                 <Arrow
                   points={newArrow}
-                  pointerLength={8}
-                  pointerWidth={8}
+                  pointerLength={13}
+                  pointerWidth={13}
                   fill="red"
                   stroke="red"
-                  strokeWidth={6}
+                  strokeWidth={11}
                 />
               </>
             )}
