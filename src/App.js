@@ -4,15 +4,7 @@ import useImage from "use-image";
 
 export default function Annotator() {
   const urlParams = new URLSearchParams(window.location.search);
-  const imageUrl = urlParams.get("image") || "";
-  
-  const rowId = urlParams.get("row") || "";
-  const tableName = urlParams.get("table") || "";
-  const jobId = urlParams.get("job") || "";
-  
-  const originalFileName = urlParams.get("originalFileName") || "";
-
-
+  let imageUrl = urlParams.get("image") || "";
 
   const [finalImageUrl, setFinalImageUrl] = useState(null);
   const [image, status] = useImage(finalImageUrl);
@@ -28,22 +20,29 @@ export default function Annotator() {
     async function resolveImageUrl() {
       if (!imageUrl) return;
 
-      if (imageUrl.startsWith("data:image") || imageUrl.startsWith("https://")) {
+      // ✅ Use image directly if it's already a full URL or base64
+      if (
+        imageUrl.startsWith("data:image") ||
+        imageUrl.startsWith("https://")
+      ) {
         setFinalImageUrl(imageUrl);
-      } else {
-        try {
-          const response = await fetch(imageUrl);
-          const base64 = await response.text();
-          if (base64.startsWith("data:image")) {
-            setFinalImageUrl(base64);
-          } else {
-            console.error("Returned value is not a valid Base64 image");
-          }
-        } catch (err) {
-          console.error("Failed to fetch image from URL", err);
+        return;
+      }
+
+      // Otherwise, treat it as an Apps Script endpoint that returns base64
+      try {
+        const response = await fetch(imageUrl);
+        const base64 = await response.text();
+        if (base64.startsWith("data:image")) {
+          setFinalImageUrl(base64);
+        } else {
+          console.error("Returned value is not a valid Base64 image");
         }
+      } catch (err) {
+        console.error("Failed to fetch image from URL", err);
       }
     }
+
     resolveImageUrl();
   }, [imageUrl]);
 
@@ -51,12 +50,15 @@ export default function Annotator() {
     if (image) {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight - 150;
+
       const margin = 20;
       const maxWidth = screenWidth - margin * 2;
       const maxHeight = screenHeight - margin * 2;
       const scaleX = maxWidth / image.width;
       const scaleY = maxHeight / image.height;
-      setScale(Math.min(scaleX, scaleY, 1));
+
+      const fitScale = Math.min(scaleX, scaleY, 1);
+      setScale(fitScale);
     }
   }, [image]);
 
@@ -104,7 +106,8 @@ export default function Annotator() {
   };
 
   const handleSave = async () => {
-    if (!originalFileName || !stageRef.current || isSaving) return;
+    if (!imageUrl || !stageRef.current || isSaving) return;
+
     setIsSaving(true);
 
     const dataUrl = stageRef.current.toDataURL({
@@ -113,11 +116,11 @@ export default function Annotator() {
     });
 
     const base64 = dataUrl.split(",")[1];
+    const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
       await fetch(
-        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec" +
-          `?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
+        "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
           headers: {
