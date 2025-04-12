@@ -1,4 +1,4 @@
-import { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { Stage, Layer, Image as KonvaImage, Arrow } from "react-konva";
 import useImage from "use-image";
 
@@ -179,44 +179,44 @@ export default function Annotator() {
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
             {arrows.map((arrow, i) => (
-              <Fragment key={i}>
+              <React.Fragment key={i}>
                 <Arrow
                   points={arrow}
-                  pointerLength={6}
-                  pointerWidth={6}
+                  pointerLength={8}
+                  pointerWidth={8}
                   fill="white"
                   stroke="white"
-                  strokeWidth={6}
+                  strokeWidth={8}
                 />
                 <Arrow
                   points={arrow}
-                  pointerLength={6}
-                  pointerWidth={6}
+                  pointerLength={8}
+                  pointerWidth={8}
                   fill={i === selectedArrowIndex ? "blue" : "red"}
                   stroke={i === selectedArrowIndex ? "blue" : "red"}
-                  strokeWidth={4}
+                  strokeWidth={6}
                   onClick={() => handleArrowClick(i)}
                   onTap={() => handleArrowClick(i)}
                 />
-              </Fragment>
+              </React.Fragment>
             ))}
             {newArrow.length === 4 && (
               <>
                 <Arrow
                   points={newArrow}
-                  pointerLength={6}
-                  pointerWidth={6}
+                  pointerLength={8}
+                  pointerWidth={8}
                   fill="white"
                   stroke="white"
-                  strokeWidth={6}
+                  strokeWidth={8}
                 />
                 <Arrow
                   points={newArrow}
-                  pointerLength={6}
-                  pointerWidth={6}
+                  pointerLength={8}
+                  pointerWidth={8}
                   fill="red"
                   stroke="red"
-                  strokeWidth={4}
+                  strokeWidth={6}
                 />
               </>
             )}
