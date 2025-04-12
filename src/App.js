@@ -44,18 +44,13 @@ export default function Annotator() {
       const screenHeight = window.innerHeight - 150;
 
       const margin = 20;
-
-      const margin = 20;
       const maxWidth = screenWidth - margin * 2;
       const maxHeight = screenHeight - margin * 2;
       const scaleX = maxWidth / image.width;
       const scaleY = maxHeight / image.height;
-      
-      // Prevent upscaling past 1.0 (100%) to avoid blurry images
-      const fitScale = Math.min(scaleX, scaleY, 1);
-      
-      setScale(fitScale);
 
+      const fitScale = Math.min(scaleX, scaleY, 1);
+      setScale(fitScale);
     }
   }, [image]);
 
@@ -114,8 +109,7 @@ export default function Annotator() {
     const originalFileName = decodeURIComponent(imageUrl.split("file=")[1]);
 
     try {
-      
-        await fetch(
+      await fetch(
         "https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec",
         {
           method: "POST",
@@ -159,7 +153,6 @@ export default function Annotator() {
 
   return (
     <div style={{ padding: 20, touchAction: "manipulation" }}>
-  
       <div style={{ marginBottom: 10 }}>
         <button onClick={handleExport}>Download</button>
         <button onClick={handleSave}>Save to App</button>
@@ -186,9 +179,8 @@ export default function Annotator() {
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
             {arrows.map((arrow, i) => (
-              <>
+              <Fragment key={i}>
                 <Arrow
-                  key={`outline-${i}`}
                   points={arrow}
                   pointerLength={6}
                   pointerWidth={6}
@@ -197,7 +189,6 @@ export default function Annotator() {
                   strokeWidth={6}
                 />
                 <Arrow
-                  key={`main-${i}`}
                   points={arrow}
                   pointerLength={6}
                   pointerWidth={6}
@@ -207,7 +198,7 @@ export default function Annotator() {
                   onClick={() => handleArrowClick(i)}
                   onTap={() => handleArrowClick(i)}
                 />
-              </>
+              </Fragment>
             ))}
             {newArrow.length === 4 && (
               <>
