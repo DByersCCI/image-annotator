@@ -187,11 +187,11 @@ export default function Annotator() {
               <React.Fragment key={i}>
                 <Arrow
                   points={arrow}
-                  pointerLength={8}
-                  pointerWidth={8}
+                  pointerLength={10}
+                  pointerWidth={10}
                   fill="white"
                   stroke="white"
-                  strokeWidth={8}
+                  strokeWidth={10}
                 />
                 <Arrow
                   points={arrow}
@@ -209,11 +209,11 @@ export default function Annotator() {
               <>
                 <Arrow
                   points={newArrow}
-                  pointerLength={8}
-                  pointerWidth={8}
+                  pointerLength={10}
+                  pointerWidth={10}
                   fill="white"
                   stroke="white"
-                  strokeWidth={8}
+                  strokeWidth={10}
                 />
                 <Arrow
                   points={newArrow}
