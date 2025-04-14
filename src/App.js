@@ -88,6 +88,8 @@ export default function Annotator() {
           body: JSON.stringify({
             originalFileName,
             base64Image: base64,
+            rowId,
+            table: tableName
           }),
           mode: "no-cors",
         }
