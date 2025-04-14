@@ -16,19 +16,25 @@ export default function Annotator() {
   const [newArrow, setNewArrow] = useState([]);
   const [isDrawing, setIsDrawing] = useState(false);
   const [selectedArrowIndex, setSelectedArrowIndex] = useState(null);
-  const [scale, setScale] = useState(1);
   const [isSaving, setIsSaving] = useState(false);
   const stageRef = useRef(null);
+  const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth, height: window.innerHeight - 200 });
+
+  useEffect(() => {
+    document.body.style.margin = "0";
+    document.body.style.overflow = "hidden";
+    document.body.style.height = "100%";
+    document.body.style.width = "100%";
+  }, []);
 
   useEffect(() => {
     if (image) {
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight - 180; // adjusted for buttons
-      const maxWidth = screenWidth - 20;
-      const maxHeight = screenHeight - 20;
-      const scaleX = maxWidth / image.width;
-      const scaleY = maxHeight / image.height;
-      setScale(Math.min(scaleX, scaleY, 1));
+      const screenHeight = window.innerHeight - 200; // leave space for controls
+      const scaleX = screenWidth / image.width;
+      const scaleY = screenHeight / image.height;
+      const scale = Math.min(scaleX, scaleY, 1);
+      setCanvasSize({ width: image.width * scale, height: image.height * scale });
     }
   }, [image]);
 
@@ -41,16 +47,21 @@ export default function Annotator() {
     }
     setIsDrawing(true);
     const pos = getPointerPosition(e);
-    if (pos) {
-      setNewArrow([pos.x / scale, pos.y / scale]);
+    if (pos && image) {
+      setNewArrow([pos.x * image.width / canvasSize.width, pos.y * image.height / canvasSize.height]);
     }
   };
 
   const draw = (e) => {
-    if (!isDrawing) return;
+    if (!isDrawing || !image) return;
     const pos = getPointerPosition(e);
     if (pos) {
-      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
+      setNewArrow((prev) => [
+        prev[0],
+        prev[1],
+        pos.x * image.width / canvasSize.width,
+        pos.y * image.height / canvasSize.height
+      ]);
     }
   };
 
@@ -136,10 +147,8 @@ export default function Annotator() {
 
       {image ? (
         <Stage
-          width={image.width * scale}
-          height={image.height * scale}
-          scaleX={scale}
-          scaleY={scale}
+          width={canvasSize.width}
+          height={canvasSize.height}
           ref={stageRef}
           onMouseDown={startDrawing}
           onTouchStart={startDrawing}
