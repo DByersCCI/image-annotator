@@ -82,24 +82,25 @@ export default function Annotator() {
         `https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            originalFileName,
-            base64Image: base64,
-            rowId,
-            table: tableName
-          }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ originalFileName, base64Image: base64, rowId, table: tableName }),
           mode: "no-cors",
         }
       );
-
       alert("✅ Upload attempted. Check Google Drive to confirm.");
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
     }
+  };
+
+  const handleDownload = () => {
+    if (!stageRef.current) return;
+    const dataUrl = stageRef.current.toDataURL({ mimeType: "image/jpeg", quality: 0.92 });
+    const link = document.createElement("a");
+    link.download = "annotated.jpg";
+    link.href = dataUrl;
+    link.click();
   };
 
   const handleUndo = () => {
@@ -124,13 +125,14 @@ export default function Annotator() {
 
   return (
     <div style={{ padding: 20, touchAction: "manipulation" }}>
-      <div style={{ marginBottom: 10 }}>
-        <button onClick={handleSave} disabled={isSaving}>
+      <div style={{ marginBottom: 20, display: "flex", flexWrap: "wrap", gap: 10 }}>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleSave} disabled={isSaving}>
           {isSaving ? "Saved" : "Save to App"}
         </button>
-        <button onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
-        <button onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
-        <button onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleUndo} disabled={arrows.length === 0}>Undo</button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDownload}>Download</button>
       </div>
 
       {image ? (
