@@ -91,6 +91,7 @@ export default function Annotator() {
             base64Image: base64,
             rowId,
             table: tableName
+            job: jobId
           }),
           mode: "no-cors",
         }
