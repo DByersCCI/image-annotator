@@ -23,10 +23,9 @@ export default function Annotator() {
   useEffect(() => {
     if (image) {
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight - 150;
-      const margin = 20;
-      const maxWidth = screenWidth - margin * 2;
-      const maxHeight = screenHeight - margin * 2;
+      const screenHeight = window.innerHeight - 180; // adjusted for buttons
+      const maxWidth = screenWidth - 20;
+      const maxHeight = screenHeight - 20;
       const scaleX = maxWidth / image.width;
       const scaleY = maxHeight / image.height;
       setScale(Math.min(scaleX, scaleY, 1));
