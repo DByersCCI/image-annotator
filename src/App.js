@@ -18,7 +18,7 @@ export default function Annotator() {
   const [selectedArrowIndex, setSelectedArrowIndex] = useState(null);
   const [isSaving, setIsSaving] = useState(false);
   const stageRef = useRef(null);
-  const [canvasSize, setCanvasSize] = useState({ width: window.innerWidth, height: window.innerHeight - 200 });
+  const [scale, setScale] = useState(1);
 
   useEffect(() => {
     document.body.style.margin = "0";
@@ -30,11 +30,12 @@ export default function Annotator() {
   useEffect(() => {
     if (image) {
       const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight - 200; // leave space for controls
-      const scaleX = screenWidth / image.width;
-      const scaleY = screenHeight / image.height;
-      const scale = Math.min(scaleX, scaleY, 1);
-      setCanvasSize({ width: image.width * scale, height: image.height * scale });
+      const screenHeight = window.innerHeight - 200;
+      const maxWidth = screenWidth - 20;
+      const maxHeight = screenHeight - 20;
+      const scaleX = maxWidth / image.width;
+      const scaleY = maxHeight / image.height;
+      setScale(Math.min(scaleX, scaleY, 1));
     }
   }, [image]);
 
@@ -47,21 +48,16 @@ export default function Annotator() {
     }
     setIsDrawing(true);
     const pos = getPointerPosition(e);
-    if (pos && image) {
-      setNewArrow([pos.x * image.width / canvasSize.width, pos.y * image.height / canvasSize.height]);
+    if (pos) {
+      setNewArrow([pos.x / scale, pos.y / scale]);
     }
   };
 
   const draw = (e) => {
-    if (!isDrawing || !image) return;
+    if (!isDrawing) return;
     const pos = getPointerPosition(e);
     if (pos) {
-      setNewArrow((prev) => [
-        prev[0],
-        prev[1],
-        pos.x * image.width / canvasSize.width,
-        pos.y * image.height / canvasSize.height
-      ]);
+      setNewArrow((prev) => [prev[0], prev[1], pos.x / scale, pos.y / scale]);
     }
   };
 
@@ -80,11 +76,7 @@ export default function Annotator() {
     if (!originalFileName || !stageRef.current || isSaving) return;
     setIsSaving(true);
 
-    const dataUrl = stageRef.current.toDataURL({
-      mimeType: "image/jpeg",
-      quality: 0.92,
-    });
-
+    const dataUrl = stageRef.current.toDataURL({ mimeType: "image/jpeg", quality: 0.92 });
     const base64 = dataUrl.split(",")[1];
 
     try {
@@ -147,8 +139,10 @@ export default function Annotator() {
 
       {image ? (
         <Stage
-          width={canvasSize.width}
-          height={canvasSize.height}
+          width={image.width * scale}
+          height={image.height * scale}
+          scaleX={scale}
+          scaleY={scale}
           ref={stageRef}
           onMouseDown={startDrawing}
           onTouchStart={startDrawing}
