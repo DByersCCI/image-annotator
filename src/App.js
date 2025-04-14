@@ -79,8 +79,7 @@ export default function Annotator() {
 
     try {
       await fetch(
-        `https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec?job=${encodeURIComponent(jobId)}`,
-
+        `https://script.google.com/macros/s/AKfycbz4Vi2yI3bnY1g5hw_K1WKiaqnPRK22XBcFF4G2Inju-9XoWfk_yXDfI2570zzA5pkM/exec?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
         {
           method: "POST",
           headers: {
@@ -91,7 +90,6 @@ export default function Annotator() {
             base64Image: base64,
             rowId,
             table: tableName
-            job: jobId
           }),
           mode: "no-cors",
         }
