@@ -19,7 +19,6 @@ export default function Annotator() {
   const [isSaving, setIsSaving] = useState(false);
   const stageRef = useRef(null);
   const [scale, setScale] = useState(1);
-  const [fitToScreen, setFitToScreen] = useState(true);
 
   useEffect(() => {
     document.body.style.margin = "0";
@@ -29,7 +28,7 @@ export default function Annotator() {
   }, []);
 
   useEffect(() => {
-    if (image && fitToScreen) {
+    if (image) {
       const screenWidth = window.innerWidth;
       const screenHeight = window.innerHeight - 200;
       const maxWidth = screenWidth - 20;
@@ -37,10 +36,11 @@ export default function Annotator() {
       const scaleX = maxWidth / image.width;
       const scaleY = maxHeight / image.height;
       setScale(Math.min(scaleX, scaleY, 1));
-    } else if (image && !fitToScreen) {
-      setScale(1);
     }
-  }, [image, fitToScreen]);
+  }, [image]);
+
+  const zoomIn = () => setScale(prev => prev * 1.1);
+  const zoomOut = () => setScale(prev => prev / 1.1);
 
   const getPointerPosition = (e) => e.target.getStage().getPointerPosition();
 
@@ -138,9 +138,8 @@ export default function Annotator() {
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDownload}>Download</button>
-        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={() => setFitToScreen((prev) => !prev)}>
-          {fitToScreen ? "Enable Zoom" : "Fit to Screen"}
-        </button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={zoomIn}>Zoom In</button>
+        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={zoomOut}>Zoom Out</button>
       </div>
 
       {image ? (
