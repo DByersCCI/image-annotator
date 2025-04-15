@@ -76,7 +76,15 @@ export default function Annotator() {
     if (!originalFileName || !stageRef.current || isSaving) return;
     setIsSaving(true);
 
-    const dataUrl = stageRef.current.toDataURL({ mimeType: "image/jpeg", quality: 0.92 });
+    const originalWidth = image.width;
+    const originalHeight = image.height;
+
+    const tempStage = stageRef.current.clone();
+    tempStage.width(originalWidth);
+    tempStage.height(originalHeight);
+    tempStage.scale({ x: 1, y: 1 });
+
+    const dataUrl = tempStage.toDataURL({ mimeType: "image/jpeg", quality: 0.92 });
     const base64 = dataUrl.split(",")[1];
 
     try {
