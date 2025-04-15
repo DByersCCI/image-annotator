@@ -150,7 +150,7 @@ export default function Annotator() {
           onTouchMove={draw}
           onMouseUp={endDrawing}
           onTouchEnd={endDrawing}
-          style={{ border: "1px solid #ccc" }}
+          style={{ border: "1px solid #ccc", display: "block", margin: "0 auto" }}
         >
           <Layer>
             <KonvaImage image={image} width={image.width} height={image.height} />
