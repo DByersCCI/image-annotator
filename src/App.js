@@ -39,9 +39,6 @@ export default function Annotator() {
     }
   }, [image]);
 
-  const zoomIn = () => setScale(prev => prev * 1.1);
-  const zoomOut = () => setScale(prev => prev / 1.1);
-
   const getPointerPosition = (e) => e.target.getStage().getPointerPosition();
 
   const startDrawing = (e) => {
@@ -138,8 +135,6 @@ export default function Annotator() {
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDelete} disabled={selectedArrowIndex === null}>Delete</button>
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleClear} disabled={arrows.length === 0}>Clear All</button>
         <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={handleDownload}>Download</button>
-        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={zoomIn}>Zoom In</button>
-        <button style={{ fontSize: 18, padding: "10px 16px" }} onClick={zoomOut}>Zoom Out</button>
       </div>
 
       {image ? (
