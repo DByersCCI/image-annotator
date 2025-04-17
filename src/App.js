@@ -97,7 +97,7 @@ export default function Annotator() {
           mode: "no-cors",
         }
       );
-      alert("✅ Completed - Close browser with upperleft 'X'.");      
+      alert("✅ Completed - Close browser with upperleft 'X' and then refresh your app to see the changed image.");      
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
