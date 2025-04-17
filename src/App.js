@@ -97,7 +97,7 @@ export default function Annotator() {
           mode: "no-cors",
         }
       );
-      alert("✅ Upload attempted. Check Google Drive to confirm.");
+      alert("✅ Completed - Close browser with upperleft 'X'.");      
     } catch (err) {
       console.error("Upload failed", err);
       alert("🚨 Upload error: " + err.message);
