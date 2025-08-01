@@ -89,7 +89,7 @@ export default function Annotator() {
 
     try {
       await fetch(
-        `https://script.google.com/macros/s/AKfycbzJb03REkN2B1snsapsG5WLsLs8-NkweVeV0f8Rh3mwyyBM9imGT6m6SDL8MIMi0DOA/exec?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
+        `https://script.google.com/macros/s/AKfycbwxsvlXMeFTWBs1UkcMTfBg5YCYH2B-qCplaNKKGY5B2QCkQHByhP0Cgps6wTuDMzw7/exec?row=${encodeURIComponent(rowId)}&table=${encodeURIComponent(tableName)}&job=${encodeURIComponent(jobId)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
